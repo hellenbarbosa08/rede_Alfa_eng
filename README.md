@@ -527,10 +527,6 @@ Essa etapa será utilizada para estudar:
 
 ## 📚 Objetivo de aprendizado
 
-Este laboratório faz parte de uma trilha prática de estudos voltada para:
-
-```text
-Redes → Infraestrutura → Linux → Cloud → DevOps
-```
+Este laboratório faz parte de uma trilha prática de estudos 
 
 Além de construir uma rede funcional, o objetivo é desenvolver capacidade de planejamento, implementação, documentação e troubleshooting de ambientes de infraestrutura.
