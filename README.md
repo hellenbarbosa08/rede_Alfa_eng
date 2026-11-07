@@ -1,112 +1,107 @@
-
 # 🌐 Rede Corporativa — Alfa Engenharia
 
-### Projeto de Infraestrutura e Redes de Computadores
+![Cisco Packet Tracer](https://img.shields.io/badge/Cisco-Packet_Tracer-049FD9?style=flat-square)
+![Networking](https://img.shields.io/badge/Networking-TCP%2FIP-blue?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Em_Desenvolvimento-yellow?style=flat-square)
 
-![Status](https://img.shields.io/badge/Status-Em%20evolu%C3%A7%C3%A3o-blue)
-![Cisco](https://img.shields.io/badge/Cisco-Packet%20Tracer-049FD9)
-![Redes](https://img.shields.io/badge/Redes-TCP%2FIP-green)
-![NAT](https://img.shields.io/badge/NAT%2FPAT-Validado-success)
+## 📖 Sobre o projeto
 
-## 📌 Sobre o projeto
+Este projeto apresenta o planejamento, a implementação e a validação de uma infraestrutura de rede corporativa simulada para a empresa fictícia **Alfa Engenharia**, utilizando o Cisco Packet Tracer.
 
-O projeto **Rede Alfa Engenharia** consiste no planejamento, desenvolvimento e simulação de uma infraestrutura de rede corporativa utilizando o Cisco Packet Tracer.
+A proposta é desenvolver uma rede segmentada, organizada e escalável, aplicando conceitos fundamentais de infraestrutura e administração de redes.
 
-O cenário representa uma empresa fictícia com diferentes departamentos que necessitam de comunicação interna, acesso controlado aos recursos de rede e conectividade com uma rede externa simulada.
+A implementação contempla:
 
-A solução utiliza segmentação por VLANs, endereçamento IPv4 com VLSM, roteamento entre redes, distribuição dinâmica de endereços por DHCP, listas de controle de acesso (ACLs) e tradução de endereços NAT/PAT.
+- Planejamento de endereçamento IPv4 utilizando VLSM;
+- Segmentação da rede por departamentos utilizando VLANs;
+- Configuração de enlaces trunk com IEEE 802.1Q;
+- Roteamento inter-VLAN utilizando Router-on-a-Stick;
+- Distribuição automática de endereços IP com DHCP;
+- Configuração de DHCP Relay;
+- Controle de tráfego entre departamentos utilizando ACLs;
+- Conexão da rede interna com um ISP simulado;
+- Configuração de rota padrão;
+- Tradução de endereços utilizando NAT/PAT;
+- Testes de conectividade e diagnóstico de rede.
 
-O objetivo é aplicar conceitos de infraestrutura e redes em um cenário próximo aos desafios encontrados na administração de ambientes corporativos.
+O laboratório faz parte dos meus estudos práticos em **Redes de Computadores, Infraestrutura de TI e DevOps**.
 
 ---
 
 ## 🎯 Objetivos
 
-- Planejar uma rede corporativa segmentada.
-- Aplicar VLSM para otimização de endereços IPv4.
-- Configurar VLANs para diferentes departamentos.
-- Implementar comunicação entre VLANs.
-- Centralizar a distribuição de endereços via DHCP.
-- Controlar o tráfego entre setores utilizando ACLs.
-- Configurar conectividade com um provedor externo simulado.
-- Implementar NAT/PAT para comunicação externa.
-- Realizar testes de conectividade e troubleshooting.
-- Documentar configurações e resultados.
+O principal objetivo é simular uma infraestrutura de rede empresarial que permita compreender como diferentes tecnologias trabalham em conjunto para garantir comunicação, organização e controle de acesso.
+
+### Objetivos específicos
+
+1. Planejar um esquema de endereçamento IP eficiente.
+2. Segmentar a rede por departamentos.
+3. Permitir comunicação entre VLANs por meio de roteamento.
+4. Centralizar a distribuição de endereços IP.
+5. Aplicar políticas de controle de acesso entre setores.
+6. Simular a comunicação entre uma rede privada e uma rede externa.
+7. Implementar tradução de endereços IPv4 com NAT/PAT.
+8. Validar as configurações por meio de comandos de diagnóstico.
 
 ---
 
-## 🛠️ Tecnologias e conceitos
+## 🏗️ Arquitetura da rede
 
-| Tecnologia | Aplicação |
-|---|---|
-| Cisco Packet Tracer | Simulação da infraestrutura |
-| Cisco IOS | Configuração dos dispositivos |
-| IPv4 e VLSM | Planejamento de sub-redes |
-| VLANs | Segmentação lógica |
-| IEEE 802.1Q | Comunicação por trunks |
-| Router-on-a-Stick | Roteamento entre VLANs |
-| DHCP | Atribuição automática de IP |
-| DHCP Relay | Encaminhamento de solicitações DHCP |
-| ACLs | Controle de acesso |
-| Roteamento estático | Comunicação entre redes |
-| NAT/PAT | Tradução de endereços |
-| ICMP | Testes de conectividade |
+A infraestrutura foi organizada em uma topologia hierárquica, utilizando um roteador principal, um switch central e switches de acesso para os departamentos.
 
----
-
-## 🏢 Cenário corporativo
-
-A infraestrutura representa quatro setores da Alfa Engenharia:
-
-1. Administrativo
-2. Financeiro
-3. Tecnologia da Informação
-4. Recursos compartilhados
-
-Cada setor utiliza uma VLAN específica, permitindo organização lógica, redução dos domínios de broadcast e aplicação de regras de comunicação entre departamentos.
-
-### Arquitetura lógica simplificada
+### Topologia lógica simplificada
 
 ```text
-                REDE EXTERNA
-                     |
-               SERVIDOR EXTERNO
-                 203.0.113.10
-                     |
-                ROTEADOR ISP
-                     |
-                LINK WAN /30
-                     |
-              ROTEADOR ALFA
-              NAT/PAT + ACLs
-                     |
-            ROUTER-ON-A-STICK
-                     |
-                SW-CENTRAL
-                     |
-        +------------+------------+
-        |            |            |
-     VLAN 10      VLAN 20      VLAN 30
-  Administrativo  Financeiro       TI
-        |
-     VLAN 40
- Recursos compartilhados
-   DHCP e impressora
+                  REDE EXTERNA
+                 Servidor Externo
+                  203.0.113.10
+                        |
+                   ROTEADOR ISP
+                   200.0.0.2/30
+                        |
+                 LINK WAN SIMULADO
+                  200.0.0.0/30
+                        |
+                   ROTEADOR ALFA
+                   200.0.0.1/30
+                        |
+                Router-on-a-Stick
+                        |
+                    SW-CENTRAL
+                        |
+        +---------------+---------------+
+        |               |               |
+      SW-ADM          SW-FIN          SW-TI
+        |               |               |
+     VLAN 10         VLAN 20         VLAN 30
+  Administrativo    Financeiro       TI
+
+                        |
+                  SW-RECURSOS
+                        |
+                     VLAN 40
+                        |
+                +-------+-------+
+                |               |
+          Servidor DHCP     Impressora
+          192.168.10.66     192.168.10.67
 ```
 
-> Esta representação é simplificada. A topologia detalhada deve ser consultada no arquivo do Cisco Packet Tracer.
+O switch central concentra as conexões dos departamentos e estabelece a comunicação com o roteador principal por meio de um enlace trunk.
+
+O roteador Alfa realiza o roteamento entre as VLANs e encaminha o tráfego destinado à rede externa.
 
 ---
 
-## 📡 Planejamento de endereçamento IPv4
+## 📐 Planejamento de endereçamento IP
 
-Foi utilizada a rede base:
+A rede utiliza o bloco privado:
 
-**192.168.10.0/24**
+`192.168.10.0/24`
 
-A divisão em sub-redes utiliza VLSM (Variable Length Subnet Mask), permitindo alocar blocos de endereços de acordo com as necessidades dos setores.
+Foi aplicada a técnica **VLSM (Variable Length Subnet Mask)** para dividir a rede em sub-redes de tamanhos diferentes, considerando as necessidades de cada departamento.
 
-### Tabela de endereçamento
+### Tabela de VLANs
 
 | VLAN | Departamento | Rede | Máscara | Gateway |
 |---|---|---|---|---|
@@ -115,367 +110,332 @@ A divisão em sub-redes utiliza VLSM (Variable Length Subnet Mask), permitindo a
 | 30 | TI | 192.168.10.48/28 | 255.255.255.240 | 192.168.10.49 |
 | 40 | Recursos | 192.168.10.64/29 | 255.255.255.248 | 192.168.10.65 |
 
-### Vantagens da utilização de VLSM
+### Capacidade das sub-redes
 
-- Melhor aproveitamento dos endereços disponíveis.
-- Dimensionamento de redes conforme a demanda.
-- Separação lógica dos departamentos.
-- Organização e facilidade de administração.
-- Redução do desperdício de endereços IPv4.
+| VLAN | Hosts utilizáveis | Intervalo de hosts |
+|---|---|---|
+| 10 | 30 | 192.168.10.1 – 192.168.10.30 |
+| 20 | 14 | 192.168.10.33 – 192.168.10.46 |
+| 30 | 14 | 192.168.10.49 – 192.168.10.62 |
+| 40 | 6 | 192.168.10.65 – 192.168.10.70 |
+
+### Por que utilizar VLSM?
+
+O VLSM permite dimensionar cada sub-rede de acordo com a quantidade de dispositivos necessários.
+
+Isso evita a distribuição de blocos desnecessariamente grandes e melhora o aproveitamento dos endereços IPv4.
 
 ---
 
-## 🔀 VLANs e comunicação entre redes
+## 🔀 Segmentação com VLANs
 
-A segmentação da infraestrutura foi realizada por meio de VLANs.
+As VLANs permitem dividir logicamente uma infraestrutura física em diferentes domínios de broadcast.
 
-Cada VLAN representa um domínio de broadcast independente.
+Neste projeto, cada departamento possui sua própria VLAN.
 
-Para permitir comunicação entre diferentes VLANs, foi utilizada a arquitetura **Router-on-a-Stick**.
+### Benefícios
 
-Nessa abordagem, um enlace trunk 802.1Q transporta o tráfego das VLANs até o roteador, que realiza o encaminhamento entre as sub-redes por meio de subinterfaces.
+- Organização do tráfego;
+- Redução dos domínios de broadcast;
+- Isolamento lógico entre setores;
+- Facilidade de administração;
+- Possibilidade de aplicar políticas de segurança entre departamentos.
 
-### Interfaces de roteamento
+### Comandos de verificação
 
-| Interface | VLAN | Gateway |
+```cisco
+show vlan brief
+```
+
+Exibe as VLANs configuradas e as portas associadas.
+
+```cisco
+show interfaces trunk
+```
+
+Permite verificar quais interfaces estão operando como trunk e quais VLANs são transportadas.
+
+---
+
+## 🔄 Roteamento inter-VLAN
+
+Como dispositivos em VLANs distintas pertencem a redes diferentes, é necessário utilizar um equipamento de camada 3 para permitir a comunicação entre elas.
+
+Neste projeto, foi utilizada a arquitetura **Router-on-a-Stick**.
+
+O roteador possui subinterfaces lógicas associadas às VLANs, utilizando encapsulamento IEEE 802.1Q.
+
+### Organização das subinterfaces
+
+| Subinterface | VLAN | Gateway |
 |---|---|---|
 | GigabitEthernet0/0/0.10 | 10 | 192.168.10.1 |
 | GigabitEthernet0/0/0.20 | 20 | 192.168.10.33 |
 | GigabitEthernet0/0/0.30 | 30 | 192.168.10.49 |
 | GigabitEthernet0/0/0.40 | 40 | 192.168.10.65 |
 
-As subinterfaces podem ser verificadas utilizando:
+### Exemplo de configuração
+
+```cisco
+interface GigabitEthernet0/0/0.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.1 255.255.255.224
+```
+
+As demais subinterfaces seguem a mesma lógica, utilizando seus respectivos identificadores de VLAN, máscaras e gateways.
+
+### Verificação
 
 ```cisco
 show ip interface brief
-show running-config
-show ip route
 ```
 
-Esses comandos permitem identificar o estado das interfaces, configurações de encapsulamento e redes conhecidas pelo roteador.
+O comando permite consultar os endereços IP e os estados das interfaces.
+
+Também foram utilizados testes de conectividade entre hosts e seus respectivos gateways.
 
 ---
 
-## 🖥️ DHCP centralizado
+## 🖥️ Servidor DHCP centralizado
 
-O projeto utiliza distribuição centralizada de endereços IP por meio do protocolo DHCP.
+O projeto utiliza um servidor DHCP localizado na VLAN 40.
 
-O servidor DHCP está localizado na rede de recursos compartilhados.
+**Endereço do servidor:** `192.168.10.66`
 
-**Endereço utilizado no projeto:**
+A centralização do DHCP facilita o gerenciamento dos endereços distribuídos para os diferentes setores.
 
-```text
-Servidor DHCP: 192.168.10.66
-```
+### DHCP Relay
 
-Como os clientes estão distribuídos entre diferentes VLANs, foi utilizado DHCP Relay para encaminhamento das solicitações até o servidor.
+Como as mensagens DHCP Discover são inicialmente enviadas em broadcast, elas não atravessam roteadores diretamente.
 
-O mecanismo utiliza o comando Cisco:
+Para permitir que clientes de outras VLANs utilizem o servidor centralizado, foi configurado o recurso DHCP Relay.
+
+Exemplo:
 
 ```cisco
-ip helper-address 192.168.10.66
+interface GigabitEthernet0/0/0.10
+ ip helper-address 192.168.10.66
 ```
+
+O mesmo princípio é aplicado às demais VLANs que precisam encaminhar requisições ao servidor DHCP.
 
 ### Funcionamento
 
 1. O cliente solicita uma configuração IP.
-2. A solicitação DHCP é transmitida na VLAN local.
-3. O roteador recebe a solicitação na interface correspondente.
-4. O DHCP Relay encaminha a solicitação ao servidor.
-5. O servidor fornece os parâmetros de rede.
-6. O cliente recebe IP, máscara e gateway conforme sua configuração.
-
-A implementação permite centralizar a administração dos endereços utilizados pelos departamentos.
+2. A requisição chega à interface de sua VLAN.
+3. O roteador encaminha a solicitação ao servidor DHCP.
+4. O servidor disponibiliza uma configuração válida.
+5. O cliente recebe IP, máscara, gateway e demais parâmetros configurados.
 
 ---
 
-## 🔐 Controle de acesso entre VLANs
+## 🔐 Controle de acesso com ACLs
 
-Foram trabalhadas listas de controle de acesso, conhecidas como ACLs (*Access Control Lists*).
+Foram utilizadas listas de controle de acesso (ACLs) para implementar restrições de comunicação entre departamentos.
 
-As ACLs permitem definir regras de tráfego entre diferentes segmentos da rede.
+O objetivo é impedir comunicações não autorizadas e permitir apenas o tráfego compatível com as políticas definidas para a rede.
 
-Sua aplicação é importante para restringir comunicações não autorizadas e estabelecer políticas de acesso entre departamentos.
+### ACLs utilizadas
 
-### Comandos de diagnóstico
+- `CL_ADM` — controle de acesso relacionado ao setor Administrativo;
+- `CL_FIN` — controle de acesso relacionado ao setor Financeiro.
+
+As ACLs são avaliadas pelo roteador e permitem filtrar pacotes de acordo com critérios como endereços IP, protocolos e destinos.
+
+### Verificação das ACLs
 
 ```cisco
 show access-lists
-show ip interface
+```
+
+Esse comando permite visualizar as regras e seus contadores de correspondência.
+
+```cisco
 show running-config
 ```
 
-### Verificações recomendadas
+Permite conferir as ACLs configuradas e as interfaces em que foram aplicadas.
 
-- Identificar as ACLs existentes.
-- Conferir em quais interfaces estão aplicadas.
-- Verificar o sentido de aplicação: entrada ou saída.
-- Executar testes de tráfego permitido.
-- Executar testes de tráfego bloqueado.
-- Conferir a ordem das regras.
-
-> A política detalhada e seus resultados devem ser consultados nas configurações e evidências específicas das ACLs. Os testes apresentados abaixo validam a conectividade externa, mas não substituem a validação das regras de acesso entre setores.
+A política detalhada de permissões e bloqueios deve ser conferida nas configurações do arquivo Packet Tracer, evitando documentar regras diferentes das implementadas.
 
 ---
 
-# 🌍 Conectividade externa — ISP
+## 🌍 Conexão com a rede externa
 
-Foi configurada uma conexão entre o roteador da empresa e um roteador que representa um provedor de serviços de internet (ISP).
-
-O objetivo é permitir que os dispositivos internos acessem recursos localizados fora da rede corporativa simulada.
+Para simular o acesso à internet, foi adicionado um roteador ISP conectado ao roteador principal da empresa.
 
 ### Endereçamento WAN
 
-| Dispositivo | Endereço |
+| Dispositivo | Endereço IPv4 |
 |---|---|
 | Roteador Alfa | 200.0.0.1/30 |
 | Roteador ISP | 200.0.0.2/30 |
-| Servidor externo | 203.0.113.10 |
+| Rede WAN | 200.0.0.0/30 |
+| Servidor externo simulado | 203.0.113.10 |
 
-A comunicação externa utiliza uma rota padrão no roteador Alfa.
+Os endereços representam um laboratório simulado e não uma infraestrutura pública em produção.
 
 ### Rota padrão
+
+O roteador Alfa utiliza uma rota padrão para encaminhar o tráfego destinado a redes que não estão presentes em sua tabela de roteamento.
+
+Configuração:
 
 ```cisco
 ip route 0.0.0.0 0.0.0.0 200.0.0.2
 ```
 
-A rota padrão é utilizada quando não existe uma rota mais específica para o destino na tabela de roteamento.
+Essa configuração define o roteador ISP como próximo salto para destinos externos.
 
-Dessa forma, os pacotes destinados a redes externas podem ser encaminhados ao roteador ISP.
+### Verificação
+
+```cisco
+show ip route
+```
+
+A tabela de roteamento deve apresentar a rota padrão apontando para `200.0.0.2`.
 
 ---
 
-## 🔁 NAT/PAT — Tradução de endereços
+## 🔄 NAT e PAT
 
-Para permitir a comunicação dos dispositivos internos com a rede externa simulada, foi configurado NAT com sobrecarga (*PAT — Port Address Translation*).
+Como os computadores internos utilizam endereços IPv4 privados, foi implementado NAT/PAT para permitir comunicação com a rede externa simulada.
 
-O PAT permite que diferentes dispositivos privados compartilhem um endereço externo.
+### NAT — Network Address Translation
 
-Na simulação, a tradução utiliza o endereço **200.0.0.1** da interface de saída do roteador Alfa.
+O NAT permite traduzir endereços utilizados em uma rede para outros endereços.
 
-### Funcionamento
+### PAT — Port Address Translation
 
-```text
-PC interno
-192.168.10.7
-      |
-      v
-Roteador Alfa
-NAT/PAT
-      |
-      v
-Endereço traduzido
-200.0.0.1
-      |
-      v
-Roteador ISP
-      |
-      v
-Servidor externo
-203.0.113.10
-```
+O PAT permite que diferentes conexões internas compartilhem um endereço externo, distinguindo os fluxos por informações como as portas de transporte.
+
+### Funcionamento no projeto
+
+Um computador da rede interna envia um pacote destinado ao servidor externo.
+
+Ao passar pelo roteador Alfa, o endereço de origem privado é traduzido para o endereço da interface externa.
+
+Exemplo observado no laboratório:
+
+| Informação | Endereço |
+|---|---|
+| Host interno | 192.168.10.7 |
+| Endereço externo traduzido | 200.0.0.1 |
+| Destino | 203.0.113.10 |
 
 ### Comandos de verificação
 
 ```cisco
 show ip nat translations
-show ip nat statistics
-show ip route
 ```
 
-O comando `show ip nat translations` permite visualizar traduções ativas.
+Mostra as traduções registradas na tabela NAT.
 
-O comando `show ip nat statistics` permite consultar estatísticas e identificar as interfaces configuradas para NAT.
+```cisco
+show ip nat statistics
+```
+
+Mostra estatísticas, interfaces NAT e contadores relacionados às traduções.
+
+Esses comandos foram utilizados para verificar o funcionamento do NAT/PAT durante os testes de conectividade.
 
 ---
 
-# ✅ Validação e evidências dos testes
+## 🧪 Testes e evidências
 
-Os testes apresentados nesta seção foram executados no Cisco Packet Tracer.
+Os testes foram realizados no Cisco Packet Tracer para verificar a comunicação entre a infraestrutura interna e a rede externa simulada.
 
-O objetivo é comprovar o funcionamento da conectividade externa, do encaminhamento por rota padrão e da tradução NAT/PAT.
+### 1. Teste de conectividade externa
 
-## Teste 01 — Conectividade com servidor externo
+Foi executado um teste de ping de um computador da rede interna para o servidor externo:
 
-**Objetivo:** verificar se um dispositivo da rede interna consegue alcançar o servidor externo simulado.
-
-**Dispositivo:** PC0(4)
-
-**Comando executado:**
-
-```cmd
+```text
 ping 203.0.113.10
 ```
 
-### Resultado observado
+Resultado registrado:
 
-```text
-Packets: Sent = 4, Received = 4, Lost = 0 (0% loss)
-```
+- 4 pacotes enviados;
+- 4 respostas recebidas;
+- 0% de perda de pacotes.
 
-O teste apresentou quatro respostas do servidor externo, sem perda de pacotes.
+O resultado demonstra conectividade ICMP no cenário testado.
 
-### Evidência
+![Teste de conectividade com servidor externo](evidencias/pingExterno.png)
 
-![Ping para o servidor externo](evidencias/01_ping_externo.png)
+### 2. Verificação da tabela de roteamento
 
-**Conclusão:** a comunicação ICMP entre o dispositivo interno e o servidor externo simulado foi validada.
-
----
-
-## Teste 02 — Verificação da rota padrão
-
-**Objetivo:** verificar a existência de uma rota padrão para encaminhamento de pacotes destinados a redes externas.
-
-**Dispositivo:** Roteador Alfa
-
-**Comando executado:**
+Foi executado o comando:
 
 ```cisco
 show ip route
 ```
 
-### Resultado observado
+A tabela de roteamento apresentou a rota padrão encaminhando o tráfego para o roteador ISP, utilizando o próximo salto `200.0.0.2`.
 
-```text
-Gateway of last resort is 200.0.0.2 to network 0.0.0.0
-```
+![Tabela de roteamento do roteador Alfa](evidencias/roteamento.png)
 
-O roteador apresenta o endereço 200.0.0.2 como gateway de último recurso.
+### 3. Verificação das traduções NAT/PAT
 
-A tabela também apresenta as sub-redes internas diretamente conectadas às subinterfaces do roteador.
-
-### Evidência
-
-![Tabela de roteamento](evidencias/02_rota_padrao.png)
-
-**Conclusão:** a presença do gateway de último recurso foi confirmada na tabela de roteamento.
-
----
-
-## Teste 03 — Verificação das traduções NAT/PAT
-
-**Objetivo:** verificar se o roteador realiza a tradução dos endereços privados durante a comunicação com o servidor externo.
-
-**Dispositivo:** Roteador Alfa
-
-**Comando executado:**
+Foi executado o comando:
 
 ```cisco
 show ip nat translations
 ```
 
-### Resultado observado
+O resultado apresentou traduções relacionadas ao tráfego do host interno `192.168.10.7`, utilizando o endereço externo `200.0.0.1`.
 
-Foram registradas traduções ICMP envolvendo:
+Essa evidência demonstra que o roteador realizou a tradução de endereços durante a comunicação externa.
 
-| Campo | Valor |
-|---|---|
-| Protocolo | ICMP |
-| Inside Local | 192.168.10.7 |
-| Inside Global | 200.0.0.1 |
-| Outside Global | 203.0.113.10 |
+![Tabela de traduções NAT/PAT](evidencias/traducaoNat.png)
 
-As entradas apresentam identificadores ICMP distintos, demonstrando o funcionamento da tradução por sobrecarga.
+### 4. Estatísticas NAT
 
-### Evidência
-
-![Traduções NAT e PAT](evidencias/03_nat_translations.png)
-
-**Conclusão:** a captura comprova a existência de traduções ICMP do endereço privado 192.168.10.7 para o endereço externo 200.0.0.1.
-
----
-
-## Teste 04 — Estatísticas NAT
-
-**Objetivo:** consultar os contadores e as interfaces utilizadas pelo mecanismo de tradução.
-
-**Dispositivo:** Roteador Alfa
-
-**Comando executado:**
+Foi utilizado o comando:
 
 ```cisco
 show ip nat statistics
 ```
 
-### Resultado observado
+A saída permitiu verificar informações sobre as interfaces associadas ao NAT e os contadores de traduções.
 
-```text
-Total translations: 0
-Hits: 29
-Misses: 32
-Expired translations: 32
-```
+![Estatísticas NAT](evidencias/nat.png)
 
-A captura registra a interface de saída GigabitEthernet0/0/1 e as subinterfaces internas configuradas para NAT.
+### Resumo dos testes
 
-O valor de zero traduções indica que não havia entradas ativas no momento dessa consulta.
-
-As estatísticas históricas e a evidência anterior de traduções permitem verificar que o mecanismo havia processado tráfego.
-
-### Evidência
-
-![Estatísticas NAT](evidencias/04_nat_statistics.png)
-
-**Conclusão:** as interfaces NAT e seus contadores foram verificados. As traduções observadas no teste anterior já haviam expirado no momento da última captura.
-
----
-
-## 📊 Resumo da validação
-
-| Teste | Resultado | Situação |
-|---|---|---|
-| Ping ao servidor externo | 4 respostas, 0% de perda | ✅ Validado |
-| Gateway de último recurso | 200.0.0.2 | ✅ Validado |
-| Tradução NAT/PAT | 192.168.10.7 → 200.0.0.1 | ✅ Validado |
-| Estatísticas NAT | Interfaces e contadores registrados | ✅ Verificado |
-| DHCP por VLAN | Configuração trabalhada no projeto | 📝 Evidência a anexar |
-| ACLs | Regras trabalhadas no projeto | 📝 Evidência a anexar |
-| Roteamento entre VLANs | Interfaces conectadas na tabela | 📝 Testes entre clientes a anexar |
-
-As evidências permitem comprovar a conectividade externa do dispositivo testado e o funcionamento das traduções NAT/PAT.
-
-Elas não comprovam isoladamente que todos os clientes, serviços e políticas de acesso da infraestrutura estejam funcionando.
-
----
-
-## 🔍 Troubleshooting e diagnóstico
-
-Durante o desenvolvimento de uma infraestrutura de redes, é importante utilizar ferramentas de diagnóstico para identificar possíveis falhas.
-
-### Comandos utilizados
-
-| Comando | Finalidade |
+| Teste | Resultado |
 |---|---|
-| `ping` | Testar conectividade IP |
-| `ipconfig` | Verificar configuração de rede do cliente |
-| `show ip interface brief` | Consultar o estado das interfaces |
-| `show ip route` | Verificar rotas disponíveis |
-| `show vlan brief` | Consultar VLANs no switch |
-| `show interfaces trunk` | Verificar links trunk |
-| `show access-lists` | Consultar regras de controle de acesso |
-| `show ip nat translations` | Visualizar traduções NAT |
-| `show ip nat statistics` | Consultar estatísticas NAT |
-| `show running-config` | Consultar configurações dos dispositivos |
-
-### Metodologia de diagnóstico
-
-1. Identificar o problema relatado.
-2. Verificar as interfaces envolvidas.
-3. Conferir endereçamento IP e gateway.
-4. Consultar a tabela de roteamento.
-5. Testar conectividade local e remota.
-6. Avaliar ACLs e traduções NAT, quando aplicável.
-7. Aplicar a correção necessária.
-8. Executar novamente os testes.
-9. Registrar os resultados e evidências.
+| Comunicação com servidor externo | Validado |
+| Rota padrão para o ISP | Validado |
+| Traduções NAT/PAT | Validado |
+| Estatísticas NAT | Verificadas |
+| Configuração de VLANs e trunk | Implementada |
+| Roteamento inter-VLAN | Implementado |
+| DHCP e DHCP Relay | Implementados |
+| Políticas ACL | Implementadas e testadas |
 
 ---
 
-## 📁 Organização do repositório
+## 🛠️ Ferramentas e tecnologias
 
-Estrutura recomendada para documentação e manutenção:
+| Tecnologia | Aplicação |
+|---|---|
+| Cisco Packet Tracer | Simulação e configuração da rede |
+| IPv4 | Endereçamento dos dispositivos |
+| VLSM | Planejamento de sub-redes |
+| VLANs | Segmentação lógica |
+| IEEE 802.1Q | Transporte de VLANs |
+| Router-on-a-Stick | Roteamento entre VLANs |
+| DHCP | Distribuição automática de IP |
+| DHCP Relay | Encaminhamento de solicitações DHCP |
+| ACLs | Controle de acesso |
+| Roteamento estático | Encaminhamento para redes externas |
+| NAT/PAT | Tradução de endereços |
+| Cisco IOS CLI | Configuração e troubleshooting |
+
+---
+
+## 📁 Estrutura do repositório
 
 ```text
 rede_Alfa_eng/
@@ -483,134 +443,127 @@ rede_Alfa_eng/
 ├── README.md
 │
 ├── packet-tracer/
-│   └── projeto_rede_alfa.pkt
+│   └── LAB_01_ALFA.pkt
 │
-├── evidencias/
-│   ├── 01_ping_externo.png
-│   ├── 02_rota_padrao.png
-│   ├── 03_nat_translations.png
-│   └── 04_nat_statistics.png
-│
-└── docs/
-    └── relatorio_testes.md
+└── evidencias/
+    ├── pingExterno.png
+    ├── roteamento.png
+    ├── traducaoNat.png
+    └── nat.png
 ```
 
-> A organização apresentada é uma sugestão. Os caminhos do arquivo `.pkt` e das evidências devem ser ajustados conforme os arquivos efetivamente enviados ao repositório.
+### Arquivo principal
+
+O laboratório pode ser aberto utilizando o Cisco Packet Tracer:
+
+[📂 Abrir laboratório — LAB_01_ALFA.pkt](packet-tracer/LAB_01_ALFA.pkt)
+
+### Como executar
+
+1. Instale uma versão compatível do Cisco Packet Tracer.
+2. Clone o repositório ou faça o download do projeto.
+3. Abra o arquivo `packet-tracer/LAB_01_ALFA.pkt`.
+4. Aguarde a inicialização dos dispositivos simulados.
+5. Verifique as configurações dos roteadores e switches.
+6. Execute os testes de conectividade e diagnóstico.
+
+### Clonar o repositório
+
+```bash
+git clone https://github.com/hellenbarbosa08/rede_Alfa_eng.git
+```
 
 ---
 
-## ▶️ Como explorar o projeto
+## 🔍 Comandos utilizados no diagnóstico
 
-### Pré-requisitos
+Durante o desenvolvimento, foram utilizados comandos do Cisco IOS para validar configurações e investigar problemas.
 
-- Cisco Packet Tracer instalado.
-- Conhecimentos introdutórios de IPv4.
-- Noções de VLANs, roteamento e redes locais.
+| Comando | Finalidade |
+|---|---|
+| `show ip interface brief` | Verificar endereços e estados das interfaces |
+| `show vlan brief` | Consultar VLANs e portas associadas |
+| `show interfaces trunk` | Verificar enlaces trunk |
+| `show running-config` | Consultar configurações |
+| `show ip route` | Verificar a tabela de roteamento |
+| `show access-lists` | Consultar ACLs e contadores |
+| `show ip nat translations` | Consultar traduções NAT |
+| `show ip nat statistics` | Verificar estatísticas NAT |
+| `ping` | Testar conectividade IP |
+| `traceroute` | Investigar o caminho dos pacotes |
 
-### Procedimento
+Esses comandos permitem investigar problemas relacionados a endereçamento, roteamento, segmentação, políticas de acesso e tradução de endereços.
 
-1. Clone ou baixe o repositório.
-2. Abra o arquivo `.pkt` no Cisco Packet Tracer.
-3. Examine a topologia e as conexões.
-4. Consulte as configurações dos roteadores e switches.
-5. Verifique o endereçamento dos clientes.
-6. Execute os testes de conectividade documentados.
-7. Compare os resultados com as capturas da pasta `evidencias`.
+---
 
-### Exemplo de teste
+## 🧠 Conhecimentos desenvolvidos
 
-Em um computador interno:
+O projeto permitiu aplicar conceitos fundamentais de redes e infraestrutura.
 
-```cmd
-ping 203.0.113.10
-```
+### Planejamento de rede
 
-No roteador Alfa:
+- Dimensionamento de sub-redes com VLSM;
+- Organização de dispositivos e departamentos;
+- Definição de gateways e endereçamento.
 
-```cisco
-show ip route
-show ip nat translations
-show ip nat statistics
-```
+### Configuração de infraestrutura
 
-Os resultados podem variar conforme o estado da simulação e o momento em que os comandos são executados.
+- Configuração de switches e roteadores;
+- Criação de VLANs;
+- Implementação de trunks;
+- Configuração de subinterfaces;
+- Implementação de DHCP Relay;
+- Configuração de rotas.
+
+### Segurança e comunicação
+
+- Segmentação por departamentos;
+- Aplicação de ACLs;
+- Controle do tráfego entre redes;
+- Tradução de endereços com NAT/PAT.
+
+### Diagnóstico e troubleshooting
+
+- Testes de conectividade;
+- Análise de tabelas de roteamento;
+- Verificação de configurações;
+- Investigação de falhas de comunicação;
+- Validação de traduções de endereços.
 
 ---
 
 ## 🚀 Próximas melhorias
 
-O projeto continuará evoluindo com foco em conhecimentos de infraestrutura, administração de sistemas e monitoramento.
+O projeto continuará sendo aprimorado para incorporar conhecimentos relacionados à administração e ao monitoramento de infraestrutura.
 
-### Etapa 1 — Documentação de redes
+### Monitoramento
 
-- [x] Planejamento com VLSM.
-- [x] Configuração das VLANs.
-- [x] Roteamento entre VLANs.
-- [x] DHCP centralizado.
-- [x] Configuração de ACLs.
-- [x] Conectividade com ISP simulado.
-- [x] Rota padrão.
-- [x] NAT/PAT.
-- [x] Evidências de conectividade externa.
-- [ ] Adicionar evidências completas dos testes de DHCP e ACLs.
-- [ ] Finalizar a documentação da topologia.
+- [ ] Criar laboratório Linux utilizando Ubuntu;
+- [ ] Configurar serviços de rede em um ambiente Linux;
+- [ ] Instalar e configurar o Zabbix;
+- [ ] Monitorar disponibilidade, CPU, memória e disco;
+- [ ] Criar triggers para identificar condições de falha;
+- [ ] Simular incidentes e documentar o diagnóstico;
+- [ ] Construir dashboards de monitoramento.
 
-### Etapa 2 — Administração Linux
+### Infraestrutura e documentação
 
-- [ ] Preparar ambiente Ubuntu.
-- [ ] Praticar comandos básicos de Linux.
-- [ ] Administrar processos e serviços.
-- [ ] Configurar servidor Nginx.
-- [ ] Consultar logs e diagnosticar falhas.
-- [ ] Simular indisponibilidade e recuperação de serviço.
+- [ ] Exportar configurações relevantes dos dispositivos;
+- [ ] Documentar detalhadamente as regras de ACL;
+- [ ] Criar um diagrama de topologia mais detalhado;
+- [ ] Documentar novos cenários de troubleshooting;
+- [ ] Avaliar possibilidades de integração com ferramentas de monitoramento.
 
-### Etapa 3 — Monitoramento com Zabbix
-
-- [ ] Preparar ambiente de monitoramento.
-- [ ] Configurar Zabbix Server e Agent.
-- [ ] Monitorar CPU, memória e disco.
-- [ ] Criar verificações de disponibilidade.
-- [ ] Configurar triggers.
-- [ ] Simular e investigar um incidente.
-- [ ] Documentar métricas, alertas e recuperação.
-
-### Etapa 4 — Dashboards e observabilidade
-
-- [ ] Criar dashboard de infraestrutura.
-- [ ] Visualizar métricas de desempenho.
-- [ ] Investigar alertas e incidentes.
-- [ ] Avaliar integração com Grafana.
-
-> O laboratório Linux/Zabbix é uma evolução complementar, separada da topologia simulada no Packet Tracer. Uma integração direta entre os ambientes depende de recursos de conectividade e monitoramento específicos.
+**Observação:** o laboratório Cisco Packet Tracer e o futuro ambiente Linux/Zabbix são ambientes distintos. Uma integração real entre eles dependerá de recursos de comunicação e monitoramento compatíveis.
 
 ---
 
-## 📚 Aprendizados
-
-O desenvolvimento da Rede Alfa Engenharia permite aplicar conhecimentos relacionados a:
-
-- Planejamento e organização de infraestrutura.
-- Endereçamento e subnetting IPv4.
-- Configuração de equipamentos de rede.
-- Segmentação lógica e roteamento.
-- Distribuição dinâmica de endereços.
-- Controle de comunicação entre departamentos.
-- Tradução de endereços privados.
-- Diagnóstico de conectividade.
-- Validação técnica por evidências.
-- Documentação de projetos de infraestrutura.
-
-Além das configurações, o projeto busca desenvolver a capacidade de compreender o funcionamento da rede, interpretar resultados e investigar problemas de forma estruturada.
-
----
-
-## 📖 Referências
+## 📚 Referências
 
 - [Cisco Networking Academy](https://www.netacad.com/)
-- [Documentação oficial Cisco](https://www.cisco.com/c/en/us/support/index.html)
+- [Documentação Cisco](https://www.cisco.com/c/en/us/support/index.html)
 - [Documentação Ubuntu Server](https://ubuntu.com/server/docs)
-- [Documentação Zabbix](https://www.zabbix.com/documentation/current/pt/)
-- [Documentação Grafana](https://grafana.com/docs/)
+- [Documentação Zabbix](https://www.zabbix.com/documentation/current/pt/manual)
 
 ---
 
@@ -618,12 +571,13 @@ Além das configurações, o projeto busca desenvolver a capacidade de compreend
 
 **Hellen Neves Barbosa**
 
-Graduanda em Engenharia da Computação — Universidade Federal do Maranhão (UFMA).
+Graduanda em Engenharia da Computação pela Universidade Federal do Maranhão (UFMA).
 
-Projeto acadêmico e pessoal voltado ao desenvolvimento de conhecimentos práticos em infraestrutura, redes de computadores e administração de sistemas.
+Interesses em Redes de Computadores, Infraestrutura de TI, Linux, Monitoramento e DevOps.
 
-**GitHub:** [hellenbarbosa08](https://github.com/hellenbarbosa08)
+[GitHub](https://github.com/hellenbarbosa08)
 
 ---
 
-**Rede Alfa Engenharia — Projeto de Infraestrutura e Redes**
+*Projeto desenvolvido para fins acadêmicos e de aprendizado prático em redes e infraestrutura de TI.*
+
