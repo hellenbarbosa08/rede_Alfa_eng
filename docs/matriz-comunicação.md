@@ -1,34 +1,10 @@
 # 🔐 Matriz de Comunicação — Alfa Engenharia
 
-Este documento define **quais setores podem se comunicar entre si** dentro da rede da Alfa Engenharia e quais acessos devem ser bloqueados.
-
-A política foi definida considerando:
-
-- separação entre Administrativo e Financeiro;
-- acesso do setor de TI aos demais setores para suporte;
-- acesso dos setores aos recursos compartilhados;
-- controle de acesso aos arquivos no servidor por permissões específicas.
+Este documento registra a política de comunicação efetivamente descrita na versão atual do laboratório.
 
 ---
 
-## 🌐 Matriz de Comunicação entre Redes
-
-| Origem | ADM | Financeiro | TI | Recursos |
-|---|---:|---:|---:|---:|
-| **ADM** | ✅ | ❌ | ✅ | ✅ |
-| **Financeiro** | ❌ | ✅ | ✅ | ✅ |
-| **TI** | ✅ | ✅ | ✅ | ✅ |
-| **Recursos** | — | — | — | — |
-
-### Legenda
-
-- ✅ **Permitido**
-- ❌ **Bloqueado**
-- — **Não se aplica / não definido como origem de usuários**
-
----
-
-## 🧩 Redes envolvidas
+## 1. Redes
 
 | Setor | VLAN | Rede |
 |---|---:|---|
@@ -39,169 +15,123 @@ A política foi definida considerando:
 
 ---
 
-## 🔒 Políticas implementadas com ACL
+## 2. Comunicação entre setores
+
+| Origem | ADM | Financeiro | TI | Recursos |
+|---|---:|---:|---:|---:|
+| **ADM** | ✅ | ❌ | ✅ | ⚠️ Controlado |
+| **Financeiro** | ❌ | ✅ | ✅ | ⚠️ Controlado |
+| **TI** | ✅ | ✅ | ✅ | ⚠️ Controlado |
+
+### Legenda
+
+- ✅ Permitido
+- ❌ Bloqueado
+- ⚠️ O acesso depende do recurso/protocolo
+
+---
+
+## 3. Recursos da VLAN 40
+
+| Recurso | IP | Serviço |
+|---|---|---|
+| DHCP | `192.168.10.66` | DHCP |
+| Impressora | `192.168.10.67` | Impressão |
+| `SRV-GERAIS` | `192.168.10.68` | FTP |
+| `SRV-FINANCEIRO` | `192.168.10.69` | FTP |
+
+---
+
+## 4. Matriz de acesso aos servidores FTP
+
+| Origem | `SRV-GERAIS` `.68` | `SRV-FINANCEIRO` `.69` |
+|---|---|---|
+| Administrativo | ✅ FTP autenticado | ❌ Tráfego IP bloqueado |
+| Financeiro | ❌ Tráfego IP bloqueado | ✅ FTP autenticado |
+| TI | ✅ FTP autenticado | ⚠️ TCP/21 bloqueado; ICMP permitido |
+
+Essa tabela é mais precisa do que simplesmente marcar toda a VLAN 40 como permitida, porque as ACLs possuem regras específicas para cada servidor e serviço.
+
+---
+
+## 5. Isolamento ADM ↔ Financeiro
 
 ### Administrativo → Financeiro
 
-O setor Administrativo **não pode iniciar comunicação com a rede Financeira**.
+```cisco
+ip access-list extended CL_ADM
+ deny ip 192.168.10.0 0.0.0.31 192.168.10.32 0.0.0.15
+```
+
+Resultado:
 
 ```text
 ADM → Financeiro = BLOQUEADO
 ```
 
-ACL utilizada:
-
-```cisco
-ip access-list extended CL_ADM
- deny ip 192.168.10.0 0.0.0.31 192.168.10.32 0.0.0.15
- permit ip any any
-```
-
-Aplicada na entrada da subinterface da VLAN 10:
-
-```cisco
-interface GigabitEthernet0/0/0.10
- ip access-group CL_ADM in
-```
-
----
-
 ### Financeiro → Administrativo
 
-O setor Financeiro **não pode iniciar comunicação com a rede Administrativa**.
+```cisco
+ip access-list extended CL_FIN
+ deny ip 192.168.10.32 0.0.0.15 192.168.10.0 0.0.0.31
+```
+
+Resultado:
 
 ```text
 Financeiro → ADM = BLOQUEADO
 ```
 
-ACL utilizada:
-
-```cisco
-ip access-list extended CL_FIN
- deny ip 192.168.10.32 0.0.0.15 192.168.10.0 0.0.0.31
- permit ip any any
-```
-
-Aplicada na entrada da subinterface da VLAN 20:
-
-```cisco
-interface GigabitEthernet0/0/0.20
- ip access-group CL_FIN in
-```
+> As demais linhas das ACLs devem ser consultadas diretamente na configuração do roteador, pois existem regras adicionais relacionadas aos servidores e serviços.
 
 ---
 
-## 🛠️ Acesso do setor de TI
+## 6. Acesso administrativo por SSH
 
-O setor de TI permanece com acesso aos demais setores para permitir atividades de:
+| Origem | SSH no R-ALFA |
+|---|---:|
+| Administrativo | ❌ |
+| Financeiro | ❌ / não autorizado |
+| TI | ✅ |
 
-- suporte;
-- manutenção;
-- diagnóstico;
-- administração da infraestrutura.
-
-Assim:
-
-```text
-TI → ADM = PERMITIDO
-TI → Financeiro = PERMITIDO
-TI → Recursos = PERMITIDO
-```
+A ACL `SSH_TI` restringe a origem permitida para administração remota do roteador.
 
 ---
 
-## 🗄️ Acesso aos Recursos Compartilhados
+## 7. Diferença entre conectividade e serviço
 
-Os setores podem acessar a rede de Recursos:
+Ter conectividade IP com um equipamento não significa necessariamente poder utilizar todos os serviços dele.
 
-```text
-ADM → Recursos = PERMITIDO
-Financeiro → Recursos = PERMITIDO
-TI → Recursos = PERMITIDO
-```
-
-A rede de Recursos utiliza:
+Exemplo da política do TI para `SRV-FINANCEIRO`:
 
 ```text
-192.168.10.64/29
+ping 192.168.10.69 → pode responder
+ftp 192.168.10.69 → bloqueado na porta TCP 21
 ```
 
-Principais dispositivos:
-
-| Recurso | Endereço |
-|---|---|
-| Servidor | `192.168.10.66` |
-| Impressora | `192.168.10.67` |
+Isso ocorre porque a ACL pode filtrar um protocolo ou porta específica sem bloquear todo o tráfego IP.
 
 ---
 
-# 📂 Matriz de Permissão de Arquivos
-
-O controle abaixo **não é feito apenas por ACL de rede**.
-
-As ACLs controlam se um setor consegue chegar ao servidor.  
-As permissões do servidor determinam **quais arquivos ou pastas cada usuário pode acessar**.
-
-| Setor | ARQUIVOS_GERAIS | ARQUIVOS_FINANCEIRO |
-|---|---:|---:|
-| Administrativo | ✅ | ❌ |
-| Financeiro | ✅ | ✅ |
-| TI | ✅ | ✅ |
-
----
-
-## 🧠 Diferença entre ACL e Permissão no Servidor
-
-### ACL de rede
-
-Responde:
-
-```text
-"Este dispositivo pode alcançar essa rede ou esse servidor?"
-```
-
-Exemplo:
-
-```text
-ADM → Financeiro = BLOQUEADO
-```
-
-### Permissão no servidor
-
-Responde:
-
-```text
-"Depois que o usuário chegou ao servidor, quais arquivos ele pode acessar?"
-```
-
-Exemplo:
-
-```text
-ADM → ARQUIVOS_GERAIS = PERMITIDO
-ADM → ARQUIVOS_FINANCEIRO = BLOQUEADO
-```
-
----
-
-## ✅ Resultado da Política
-
-A política final da rede é:
+## 8. Resultado resumido
 
 ```text
 ADM
 ├── Financeiro ❌
 ├── TI ✅
-└── Recursos ✅
+├── SRV-GERAIS ✅ FTP autenticado
+└── SRV-FINANCEIRO ❌
 
 Financeiro
 ├── ADM ❌
 ├── TI ✅
-└── Recursos ✅
+├── SRV-GERAIS ❌
+└── SRV-FINANCEIRO ✅ FTP autenticado
 
 TI
 ├── ADM ✅
 ├── Financeiro ✅
-└── Recursos ✅
+├── SRV-GERAIS ✅ FTP autenticado
+├── SRV-FINANCEIRO ⚠️ FTP bloqueado
+└── R-ALFA via SSH ✅
 ```
-
-Essa separação permite proteger informações sensíveis do setor Financeiro sem impedir o acesso da equipe de TI aos demais segmentos da rede.
