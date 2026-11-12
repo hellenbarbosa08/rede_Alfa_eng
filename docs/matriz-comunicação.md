@@ -1,93 +1,132 @@
 # 🔐 Matriz de Comunicação — Alfa Engenharia
 
-Este documento define os **requisitos de comunicação e acesso** da rede da Alfa Engenharia.
+Este documento define **quais setores podem se comunicar entre si** dentro da rede da Alfa Engenharia e quais acessos devem ser bloqueados.
 
-A matriz serve como referência para a implementação de:
+A política foi definida considerando:
 
-- segmentação por VLAN;
-- roteamento inter-VLAN;
-- ACLs;
-- acesso aos recursos compartilhados;
-- permissões de arquivos no servidor.
-
----
-
-## 🎯 Objetivo
-
-A rede deve permitir somente as comunicações necessárias entre os setores, mantendo o **TI com acesso para suporte** e protegendo o setor Financeiro contra acessos indevidos.
-
-Os setores considerados são:
-
-- Administrativo (ADM);
-- Financeiro (FIN);
-- Tecnologia da Informação (TI);
-- Recursos Compartilhados.
+- separação entre Administrativo e Financeiro;
+- acesso do setor de TI aos demais setores para suporte;
+- acesso dos setores aos recursos compartilhados;
+- controle de acesso aos arquivos no servidor por permissões específicas.
 
 ---
 
-## 🌐 Redes do projeto
+## 🌐 Matriz de Comunicação entre Redes
 
-| Setor | VLAN | Rede | Gateway |
-|---|---:|---|---|
-| Administrativo | 10 | `192.168.10.0/27` | `192.168.10.1` |
-| Financeiro | 20 | `192.168.10.32/28` | `192.168.10.33` |
-| TI | 30 | `192.168.10.48/28` | `192.168.10.49` |
-| Recursos | 40 | `192.168.10.64/29` | `192.168.10.65` |
+| Origem | ADM | Financeiro | TI | Recursos |
+|---|---:|---:|---:|---:|
+| **ADM** | ✅ | ❌ | ✅ | ✅ |
+| **Financeiro** | ❌ | ✅ | ✅ | ✅ |
+| **TI** | ✅ | ✅ | ✅ | ✅ |
+| **Recursos** | — | — | — | — |
 
----
+### Legenda
 
-# 📋 Requisitos de Comunicação
-
-## Administrativo
-
-O setor Administrativo deve:
-
-- acessar a Internet;
-- acessar a impressora;
-- acessar o servidor de arquivos;
-- acessar `ARQUIVOS_GERAIS`;
-- **não acessar `ARQUIVOS_FINANCEIRO`**;
-- **não iniciar comunicação com a rede Financeira**.
+- ✅ **Permitido**
+- ❌ **Bloqueado**
+- — **Não se aplica / não definido como origem de usuários**
 
 ---
 
-## Financeiro
+## 🧩 Redes envolvidas
 
-O setor Financeiro deve:
-
-- acessar a Internet;
-- acessar a impressora;
-- acessar o servidor de arquivos;
-- acessar `ARQUIVOS_GERAIS`;
-- acessar `ARQUIVOS_FINANCEIRO`;
-- **não iniciar comunicação com a rede Administrativa**.
+| Setor | VLAN | Rede |
+|---|---:|---|
+| Administrativo | 10 | `192.168.10.0/27` |
+| Financeiro | 20 | `192.168.10.32/28` |
+| TI | 30 | `192.168.10.48/28` |
+| Recursos | 40 | `192.168.10.64/29` |
 
 ---
 
-## Tecnologia da Informação
+## 🔒 Políticas implementadas com ACL
 
-O setor de TI deve:
+### Administrativo → Financeiro
 
-- acessar a Internet;
-- acessar a impressora;
-- acessar todos os recursos do servidor;
-- acessar `ARQUIVOS_GERAIS`;
-- acessar `ARQUIVOS_FINANCEIRO`;
-- acessar computadores do Administrativo;
-- acessar computadores do Financeiro;
-- possuir conectividade com os demais setores para suporte e administração.
+O setor Administrativo **não pode iniciar comunicação com a rede Financeira**.
+
+```text
+ADM → Financeiro = BLOQUEADO
+```
+
+ACL utilizada:
+
+```cisco
+ip access-list extended CL_ADM
+ deny ip 192.168.10.0 0.0.0.31 192.168.10.32 0.0.0.15
+ permit ip any any
+```
+
+Aplicada na entrada da subinterface da VLAN 10:
+
+```cisco
+interface GigabitEthernet0/0/0.10
+ ip access-group CL_ADM in
+```
 
 ---
 
-## Recursos Compartilhados
+### Financeiro → Administrativo
 
-A rede de Recursos deve concentrar os serviços compartilhados da empresa, incluindo:
+O setor Financeiro **não pode iniciar comunicação com a rede Administrativa**.
 
-- servidor;
-- impressora de rede;
-- serviços internos futuros.
+```text
+Financeiro → ADM = BLOQUEADO
+```
 
-Endereços planejados:
+ACL utilizada:
+
+```cisco
+ip access-list extended CL_FIN
+ deny ip 192.168.10.32 0.0.0.15 192.168.10.0 0.0.0.31
+ permit ip any any
+```
+
+Aplicada na entrada da subinterface da VLAN 20:
+
+```cisco
+interface GigabitEthernet0/0/0.20
+ ip access-group CL_FIN in
+```
+
+---
+
+## 🛠️ Acesso do setor de TI
+
+O setor de TI permanece com acesso aos demais setores para permitir atividades de:
+
+- suporte;
+- manutenção;
+- diagnóstico;
+- administração da infraestrutura.
+
+Assim:
+
+```text
+TI → ADM = PERMITIDO
+TI → Financeiro = PERMITIDO
+TI → Recursos = PERMITIDO
+```
+
+---
+
+## 🗄️ Acesso aos Recursos Compartilhados
+
+Os setores podem acessar a rede de Recursos:
+
+```text
+ADM → Recursos = PERMITIDO
+Financeiro → Recursos = PERMITIDO
+TI → Recursos = PERMITIDO
+```
+
+A rede de Recursos utiliza:
+
+```text
+192.168.10.64/29
+```
+
+Principais dispositivos:
 
 | Recurso | Endereço |
 |---|---|
@@ -96,138 +135,73 @@ Endereços planejados:
 
 ---
 
-# 🔀 Matriz de Comunicação entre Redes
+# 📂 Matriz de Permissão de Arquivos
 
-| Origem | ADM | Financeiro | TI | Recursos | Internet |
-|---|:---:|:---:|:---:|:---:|:---:|
-| **ADM** | ✅ | ❌ | ✅ | ✅ | ✅ |
-| **Financeiro** | ❌ | ✅ | ✅ | ✅ | ✅ |
-| **TI** | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Recursos** | — | — | — | — | Conforme necessidade |
+O controle abaixo **não é feito apenas por ACL de rede**.
 
-### Legenda
+As ACLs controlam se um setor consegue chegar ao servidor.  
+As permissões do servidor determinam **quais arquivos ou pastas cada usuário pode acessar**.
 
-- ✅ Permitido
-- ❌ Bloqueado
-- — Não aplicável / depende do serviço
-
----
-
-# 📂 Matriz de Acesso aos Arquivos
-
-| Setor | `ARQUIVOS_GERAIS` | `ARQUIVOS_FINANCEIRO` |
-|---|:---:|:---:|
+| Setor | ARQUIVOS_GERAIS | ARQUIVOS_FINANCEIRO |
+|---|---:|---:|
 | Administrativo | ✅ | ❌ |
 | Financeiro | ✅ | ✅ |
 | TI | ✅ | ✅ |
 
 ---
 
-## ⚠️ ACL x Permissão de Arquivos
+## 🧠 Diferença entre ACL e Permissão no Servidor
 
-As ACLs configuradas no roteador controlam **comunicação entre redes**.
+### ACL de rede
+
+Responde:
+
+```text
+"Este dispositivo pode alcançar essa rede ou esse servidor?"
+```
 
 Exemplo:
 
 ```text
 ADM → Financeiro = BLOQUEADO
-Financeiro → ADM = BLOQUEADO
 ```
 
-Porém, `ARQUIVOS_GERAIS` e `ARQUIVOS_FINANCEIRO` estão previstos no mesmo servidor:
+### Permissão no servidor
+
+Responde:
 
 ```text
-Servidor: 192.168.10.66
+"Depois que o usuário chegou ao servidor, quais arquivos ele pode acessar?"
 ```
 
-Uma ACL IP consegue identificar:
+Exemplo:
 
 ```text
-origem
-destino
-protocolo
-porta
-```
-
-mas não diferencia diretamente duas pastas armazenadas no mesmo servidor.
-
-Por isso, a política de arquivos deve ser implementada na camada de servidor utilizando:
-
-- usuários;
-- grupos;
-- autenticação;
-- permissões de diretório.
-
-Exemplo conceitual:
-
-```text
-Grupo ADM
-├── ARQUIVOS_GERAIS       → PERMITIDO
-└── ARQUIVOS_FINANCEIRO   → NEGADO
-
-Grupo FIN
-├── ARQUIVOS_GERAIS       → PERMITIDO
-└── ARQUIVOS_FINANCEIRO   → PERMITIDO
-
-Grupo TI
-├── ARQUIVOS_GERAIS       → PERMITIDO
-└── ARQUIVOS_FINANCEIRO   → PERMITIDO
+ADM → ARQUIVOS_GERAIS = PERMITIDO
+ADM → ARQUIVOS_FINANCEIRO = BLOQUEADO
 ```
 
 ---
 
-# 🔒 Políticas implementadas com ACL
+## ✅ Resultado da Política
 
-Atualmente foram implementadas as seguintes políticas de rede:
-
-```text
-ADM → Financeiro        ❌
-Financeiro → ADM        ❌
-
-ADM → Recursos          ✅
-Financeiro → Recursos   ✅
-
-TI → ADM                ✅
-TI → Financeiro         ✅
-TI → Recursos           ✅
-```
-
-Essas regras mantêm o isolamento entre Administrativo e Financeiro, sem impedir o setor de TI de realizar suporte.
-
----
-
-# ✅ Critérios de Validação
-
-A política será considerada corretamente implementada quando:
-
-- [x] ADM não conseguir alcançar PCs do Financeiro;
-- [x] Financeiro não conseguir alcançar PCs do ADM;
-- [x] TI conseguir alcançar PCs do ADM;
-- [x] TI conseguir alcançar PCs do Financeiro;
-- [x] ADM conseguir alcançar o servidor;
-- [x] Financeiro conseguir alcançar o servidor;
-- [x] TI conseguir alcançar o servidor;
-- [x] ADM conseguir acessar a rede externa;
-- [x] Financeiro conseguir acessar a rede externa;
-- [x] TI conseguir acessar a rede externa;
-- [ ] ADM acessar somente `ARQUIVOS_GERAIS`;
-- [ ] Financeiro acessar `ARQUIVOS_GERAIS` e `ARQUIVOS_FINANCEIRO`;
-- [ ] TI possuir acesso completo aos recursos do servidor.
-
----
-
-## 📌 Resumo
-
-A política de segurança do projeto utiliza duas camadas:
+A política final da rede é:
 
 ```text
-ACLs
-↓
-controlam quem pode se comunicar entre redes
+ADM
+├── Financeiro ❌
+├── TI ✅
+└── Recursos ✅
 
-Permissões do servidor
-↓
-controlam o que cada usuário pode acessar após chegar ao servidor
+Financeiro
+├── ADM ❌
+├── TI ✅
+└── Recursos ✅
+
+TI
+├── ADM ✅
+├── Financeiro ✅
+└── Recursos ✅
 ```
 
-Essa separação permite manter a rede segmentada e, ao mesmo tempo, aplicar permissões específicas aos recursos corporativos.
+Essa separação permite proteger informações sensíveis do setor Financeiro sem impedir o acesso da equipe de TI aos demais segmentos da rede.
